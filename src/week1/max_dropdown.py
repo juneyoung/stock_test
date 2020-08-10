@@ -7,22 +7,22 @@ import matplotlib.pyplot as plt
 
 
 def get_data(stock_name, start, end):
-    return pdr.get_yahoo_data(stock_name, start=start, end=end)
+    return pdr.get_data_yahoo(stock_name, start=start, end=end)
 
 
 if __name__ == '__main__':
     yfinance.pdr_override()
     start_date = '2019-01-01'
     end_date = '2019-12-31'
-    df1_id = '^K11'
+    df1_id = '^KS11'
     df2_id = '^DJI'
     df1 = get_data(df1_id, start_date, end_date)
     df2 = get_data(df2_id, start_date, end_date)
 
 
     window = 252  # 기간으로 1년 중 개장일이 252 일이라는 가정
-    peak = df1['Adjust Close'].rolling(window, min_periods=1).max()  # 최고가는 MAX
-    dd = df1['Adjust Close']/peak - 1.0  # dropdown 은 최고치 대비 현재 종가
+    peak = df1['Adj Close'].rolling(window, min_periods=1).max()  # 최고가는 MAX
+    dd = df1['Adj Close']/peak - 1.0  # dropdown 은 최고치 대비 현재 종가
     max_dd = dd.rolling(window, min_periods=1).min()  # 종가 중 최저치
 
     plt.figure(figsize=(9, 7))
