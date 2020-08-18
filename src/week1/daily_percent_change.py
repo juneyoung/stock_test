@@ -17,8 +17,8 @@ if __name__ == '__main__':
     df1 = get_data(id1, start_date, end_date)
     df2 = get_data(id2, start_date, end_date)
     df1_dpc = (df1.Close - df1.Close.shift(1)) / df1.Close.shift(1) * 100
-    df2_dpc = (df2.Close - df2.Close.shift(1)) / df2.Close.shift(1) * 100
-    # df2_dpc = ((df2.Close - df2.Close.shift(1)) / df2.Close.shift(1) - 1) * 100
+    # df2_dpc = (df2.Close - df2.Close.shift(1)) / df2.Close.shift(1) * 100
+    df2_dpc = (df2.Close - df2.Close.shift(1) / df2.Close.shift(1) - 1) * 100
 
     df1_dpc.iloc[0] = 0
     df2_dpc.iloc[0] = 0
@@ -51,3 +51,7 @@ if __name__ == '__main__':
 
     plt.show()
 
+    # 100, 150, 300
+    d1 = pd.DataFrame({'c': [100, 150, 300]})
+    d2 = d1.pct_change()
+    print(f"cusum : {d2.cumsum()}")

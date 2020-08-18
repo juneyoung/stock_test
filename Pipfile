@@ -11,6 +11,9 @@ pandas = "*"
 scipy = "*"
 matplotlib = "*"
 pandas-datareader = "*"
+beautifulsoup4 = "*"
+lxml = "*"
+mplfinance = "*"
 
 [requires]
 python_version = "3.8"

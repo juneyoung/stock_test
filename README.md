@@ -56,10 +56,38 @@ pdr.get_data_yahoo('^DJI', start='2020-01-01')
 - `end` 조건이 달라서 그런지 산점도 등을 그려보면 책과 꽤나 다른 그래프가 짠!
 - `NHN KCP CORP` 같은 주식도 `yfinance` 에 있는데 기간을 줘도 하루치 밖에 조회 안됨
 
-### 202008 첫째주
+### 202008 둘째주
 #### 파이썬 증권 데이터 분석 (p.174 ~ p.203) + Windows Setting
+
+##### 준비물
+```
+$> pipenv install beautifulsoup4
+$> pipenv install lxml
+$> pipenv install mplfinance
+```
+mplfinance 라이브러리 OSX 설치시, dependencies 관련 경고가 발생하는데, 무시하고 진행하는데 이슈가 없었음. 
 
 ##### Main Contents
 - Beautiful soup & lxml
-- Japanese Candle Chart
-- Bull & Bear
+- Japanese Candle Chart(미국식은 mplfinance 의 디폴트 차트 모양)
+
+##### 캔들 차트
+
+- 적색 : 상승장. "양봉" 혹은 bullish. 세로선으로 High 와 Low 를 나타내고, 몸통으로 종가와 시가를 나타냄
+- 청색 : 하락장. "음봉" 혹은 bearish. 세로선으로 High 와 Low 를 나타내고, 몸통으로 시가와 종가를 나타냄(몸통만 상승장과 반대)
+
+##### 주의점 
+
+- `mplfinance` 의 `plot` 에서 자동으로 칼럼을 탐지하지만 정확히 칼럼명이 맞아야 인지함(`Open`(O), `open`(X))
+
+##### Trouble shooting
+
+오류 01 : OSX 에서 `urllib.error.URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1108)>`
+```
+$> /Applications/Python\ 3.8/Install\ Certificates.command
+```
+
+오류 02. Windows 에서 `msvcr100.dll 가 없어...`
+```
+Visual C++ 재배포 가능 패키지 설치
+```

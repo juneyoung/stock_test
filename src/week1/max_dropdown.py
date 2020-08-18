@@ -15,6 +15,7 @@ if __name__ == '__main__':
     start_date = '2019-01-01'
     end_date = '2019-12-31'
     df1_id = '^KS11'
+    # df1_id = '060250.KQ'
     df2_id = '^DJI'
     df1 = get_data(df1_id, start_date, end_date)
     df2 = get_data(df2_id, start_date, end_date)
