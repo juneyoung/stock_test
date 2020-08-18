@@ -91,3 +91,6 @@ $> /Applications/Python\ 3.8/Install\ Certificates.command
 ```
 Visual C++ 재배포 가능 패키지 설치
 ```
+
+### 테스트용
+겁나 멀었음...
