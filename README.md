@@ -55,3 +55,11 @@ pdr.get_data_yahoo('^DJI', start='2020-01-01')
 ##### 그외
 - `end` 조건이 달라서 그런지 산점도 등을 그려보면 책과 꽤나 다른 그래프가 짠!
 - `NHN KCP CORP` 같은 주식도 `yfinance` 에 있는데 기간을 줘도 하루치 밖에 조회 안됨
+
+### 202008 첫째주
+#### 파이썬 증권 데이터 분석 (p.174 ~ p.203) + Windows Setting
+
+##### Main Contents
+- Beautiful soup & lxml
+- Japanese Candle Chart
+- Bull & Bear
