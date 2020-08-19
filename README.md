@@ -92,5 +92,8 @@ $> /Applications/Python\ 3.8/Install\ Certificates.command
 Visual C++ 재배포 가능 패키지 설치
 ```
 
+##### 차주 계획
+파이썬 증권 데이터 분석 챕터5(p208 ~ p251)
+
 ### 테스트용
 겁나 멀었음...
