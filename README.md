@@ -14,7 +14,7 @@
 - 내가 내 자신을 알건데, 재미없으면 안하니까 결과물 나오는 거 먼저하고 부족하면 돌아가기
 - 투자보다는 분석을 잘하고 싶음 
 
-### 202008 첫째주
+### 2020 08 첫째주
 #### 파이썬 증권 데이터 분석 (p.142 ~ p.171)
 
 ##### 준비물
@@ -56,7 +56,7 @@ pdr.get_data_yahoo('^DJI', start='2020-01-01')
 - `end` 조건이 달라서 그런지 산점도 등을 그려보면 책과 꽤나 다른 그래프가 짠!
 - `NHN KCP CORP` 같은 주식도 `yfinance` 에 있는데 기간을 줘도 하루치 밖에 조회 안됨
 
-### 202008 둘째주
+### 2020 08 둘째주
 #### 파이썬 증권 데이터 분석 (p.174 ~ p.203) + Windows Setting
 
 ##### 준비물
@@ -91,6 +91,51 @@ $> /Applications/Python\ 3.8/Install\ Certificates.command
 ```
 Visual C++ 재배포 가능 패키지 설치
 ```
+
+### 2020셋 08월 셋째주
+#### 파이썬 증권 데이터 분석 (p.208 ~ p.251)
+#### cafe24 호스팅 신청
+
+business 용으로 신청했음
+
+아래 작업들을 수행하였음
+
+- groupadd
+- useradd
+- sudoers 등록
+- firewalld activate
+- yum update
+- openjdk-11.0.8-devel 설치
+- mariadb 설치 + (charset 변경 / 권한 관리)
+- python3.8.5 [설치](https://computingforgeeks.com/how-to-install-python-on-3-on-centos/)
+
+```
+등록된 사용자 조회 
+$> cat /etc/passwd
+등록된 그룹 조회
+$> cat /etc/group
+# 그룹 추가 
+$> groupadd guests
+# 사용자 추가
+$> useradd -g guests guest1
+$> passwd guest1
+```
+
+sudoers file 에 그룹 단위로 권한을 줄 때는 `%` 를 사용한다. `sudoers` 파일에서 ... 
+```
+%guests ALL=(ALL) ALL
+```
+
+#### 주요 내용
+- try except
+- UPSERT 를 구현하는 방법 
+    - `REPLACE INTO table VALUES (values)` 구문 
+    - `INSERT INTO table (columns) VALUES (values) ON KEY DUPLICATED UPDATE column=value, ... ` 구문
+- Timer 는 timedelta 와 callable 을 받아 수행함
+
+#### Q
+아니 쓰레드 돌릴라고 데이터베이스 Timeout 을 80시간으로 설정하는게 말이 되나...  
+
 
 ### 테스트용
 겁나 멀었음...
