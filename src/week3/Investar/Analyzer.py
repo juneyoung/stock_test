@@ -9,7 +9,7 @@ class Analyzer:
     def __init__(self):
         """생성자: MariaDB 연결 및 종목코드 딕셔너리 생성"""
         self.conn = pymysql.connect(host='juneyoung5.cafe24.com', port=3306,
-                                    user='jyoh', password='jy85Widerplanet',
+                                    user='jyoh', password='******',
                                     db='stock', charset='utf8')
         self.codes = {}
         self.get_comp_info()

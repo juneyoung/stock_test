@@ -5,7 +5,7 @@ import pymysql
 class MarketDB:
     def __init__(self):
         self.conn = pymysql.connect(host='juneyoung5.cafe24.com', port=3306,
-                                    user='jyoh', password='jy85Widerplanet',
+                                    user='jyoh', password='******',
                                     db='stock', charset='utf8')
 
         self.codes = dict()
@@ -40,3 +40,5 @@ class MarketDB:
 
 if __name__ == '__main__':
     print('Run Analyzer')
+    md = MarketDB()
+    # md.get_daily_price()

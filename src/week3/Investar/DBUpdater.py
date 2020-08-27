@@ -34,7 +34,7 @@ class DBUpdater:
         """
 
         self.conn = pymysql.connect(host='juneyoung5.cafe24.com', port=3306,
-                                    user='jyoh', password='jy85Widerplanet',
+                                    user='jyoh', password='******',
                                     db='stock', charset='utf8')
 
         with self.conn.cursor() as curs:
