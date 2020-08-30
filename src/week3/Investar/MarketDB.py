@@ -1,12 +1,10 @@
 import pandas as pd
-import pymysql
+from src.etc.utils.maria_client import get_connection
 
 
 class MarketDB:
     def __init__(self):
-        self.conn = pymysql.connect(host='juneyoung5.cafe24.com', port=3306,
-                                    user='jyoh', password='******',
-                                    db='stock', charset='utf8')
+        self.conn = get_connection('/srv/stock/config/config.json')
 
         self.codes = dict()
         self.get_company_info()

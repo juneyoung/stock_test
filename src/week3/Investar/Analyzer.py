@@ -2,15 +2,14 @@ import pandas as pd
 import pymysql
 from datetime import datetime
 from datetime import timedelta
-import re
+import re  # regex module
+from src.etc.utils.maria_client import get_connection
 
 
 class Analyzer:
     def __init__(self):
         """생성자: MariaDB 연결 및 종목코드 딕셔너리 생성"""
-        self.conn = pymysql.connect(host='juneyoung5.cafe24.com', port=3306,
-                                    user='jyoh', password='******',
-                                    db='stock', charset='utf8')
+        self.conn = get_connection('/srv/stock/config/config.json')
         self.codes = {}
         self.get_comp_info()
 
@@ -86,6 +85,27 @@ class Analyzer:
             print(f"ValueError: Code({code}) doesn't exist.")
         sql = f"SELECT * FROM daily_price WHERE code = '{code}'" \
               f" and date >= '{start_date}' and date <= '{end_date}'"
+        df = pd.read_sql(sql, self.conn)
+        df.index = df['date']
+        return df
+
+
+    def get_daily_price_with_name(self, stock_name, start_date, end_date):
+        sql = f'''
+        SELECT 
+            * 
+        FROM 
+            daily_price 
+        WHERE 
+            code IN 
+            (
+                SELECT code 
+                FROM company_info 
+                WHERE company IN ('{stock_name}')
+            )
+            AND date >= '{start_date}' 
+            AND date <= '{end_date}'
+        '''
         df = pd.read_sql(sql, self.conn)
         df.index = df['date']
         return df

@@ -4,8 +4,8 @@ from threading import Timer
 import json
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-import pymysql
 import pandas as pd
+from src.etc.utils.maria_client import get_connection
 
 
 class DBUpdater:
@@ -33,9 +33,7 @@ class DBUpdater:
         )
         """
 
-        self.conn = pymysql.connect(host='juneyoung5.cafe24.com', port=3306,
-                                    user='jyoh', password='******',
-                                    db='stock', charset='utf8')
+        self.conn = get_connection('/srv/stock/config/config.json')
 
         with self.conn.cursor() as curs:
             curs.execute(company_ddl)
