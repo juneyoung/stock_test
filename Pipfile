@@ -15,6 +15,7 @@ beautifulsoup4 = "*"
 lxml = "*"
 mplfinance = "*"
 pymysql = "*"
+html5lib = "*"
 
 [requires]
 python_version = "3.8"

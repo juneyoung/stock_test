@@ -3,52 +3,55 @@ from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import pandas as pd
 from src.etc.utils.maria_client import get_connection
+"""
+1. stock 디비에서 종목 전부 가져오기
+2. nhn 에서 종목별 가격 가져오기 = too long
+3. 저장 
+
+"""
 
 
-def fetch_from_naver(code, pages_to_fetch):
+def fetch_max_page(code):
+    lastpage = 0
+    url = f'http://finance.naver.com/item/sise_day.nhn?code={code}'
+    with urlopen(url) as doc:
+        html = BeautifulSoup(doc, 'lxml')
+        pgrr = html.find('td', class_='pgRR')
+        s = str(pgrr.a['href']).split('=')
+        lastpage = int(s[-1])
+    return lastpage
+
+
+def fetch_from_naver(code, start_page, end_page):
     print(f'code : {code}')
-    df = None
-    try:
-        url = f'http://finance.naver.com/item/sise_day.nhn?code={code}'
-        with urlopen(url) as doc:
-            html = BeautifulSoup(doc, 'lxml')
-            pgrr = html.find('td', class_='pgRR')
-            s = str(pgrr.a['href']).split('=')
-            lastpage = int(s[-1])
-        df = pd.DataFrame()
+    df = pd.DataFrame()
+    url = f'http://finance.naver.com/item/sise_day.nhn?code={code}'
+    for page in range(start_page, end_page):
+        pg_url = f'{url}&page={page}'
+        df = df.append(pd.read_html(pg_url, header=0)[0])
 
-        if pages_to_fetch < 0:
-            pages_to_fetch = lastpage
-        pages = min(int(lastpage), pages_to_fetch)  # 전달받은 페이지보다 최대 페이지가 큰지 확인하는 로직
-
-        for page in range(1, pages + 1):
-            pg_url = f'{url}&page={page}'
-            df = df.append(pd.read_html(pg_url, header=0)[0])
-
-        df = df.rename(columns={
-            '날짜': 'date',
-            '시가': 'open',
-            '종가': 'close',
-            '고가': 'high',
-            '저가': 'low',
-            '전일비': 'diff',
-            '거래량': 'volume'
-        })
-        df['date'] = df['date'].replace('.', '-')
-        df.dropna(inplace=True)
-        df[['open', 'close', 'high', 'low', 'diff', 'volume']] = \
-            df[['open', 'close', 'high', 'low', 'diff', 'volume']].astype(int)
-        df = df[['date', 'open', 'close', 'high', 'low', 'diff', 'volume']]
-    except Exception as e:
-        print(f'Exception occurred : {e}')
-        raise e
+    df = df.rename(columns={
+        '날짜': 'date',
+        '시가': 'open',
+        '종가': 'close',
+        '고가': 'high',
+        '저가': 'low',
+        '전일비': 'diff',
+        '거래량': 'volume'
+    })
+    df['date'] = df['date'].replace('.', '-')
+    df.dropna(inplace=True)
+    df[['open', 'close', 'high', 'low', 'diff', 'volume']] = \
+        df[['open', 'close', 'high', 'low', 'diff', 'volume']].astype(int)
+    df = df[['date', 'open', 'close', 'high', 'low', 'diff', 'volume']]
+    df['code'] = code
     return df
 
 
 def fetch_target_codes(n_days):
     target_codes = []
     conn = None
-    n_days_ago = (datetime.now() - timedelta(hours=n_days)).strftime("%Y-%m-%d")
+    n_days_ago = (datetime.now() - timedelta(days=n_days)).strftime("%Y-%m-%d")
     qurey = f'''
             SELECT 
                 code
@@ -77,40 +80,46 @@ def upsert_prices():
             (code, date, open, close, high, low, diff, volume)
         VALUES
             (%(code)s, %(date)s, %(open)s, %(close)s, %(high)s, %(low)s, %(diff)s, %(volume)s)
-        ON DUPLICATE KEY UPDATE
-            open = VALUES(open),
-            close = VALUES(close),
-            high = VALUES(high),
-            low = VALUES(low),
-            diff = VALUES(diff),
-            volume = VALUES(volume)
     """
+
+    # query = f"""
+    #     INSERT INTO daily_price
+    #         (code, date, open, close, high, low, diff, volume)
+    #     VALUES
+    #         (%(code)s, %(date)s, %(open)s, %(close)s, %(high)s, %(low)s, %(diff)s, %(volume)s)
+    #     ON DUPLICATE KEY UPDATE
+    #         open = VALUES(open),
+    #         close = VALUES(close),
+    #         high = VALUES(high),
+    #         low = VALUES(low),
+    #         diff = VALUES(diff),
+    #         volume = VALUES(volume)
+    # """
     target_codes = fetch_target_codes(100)
-    batch_size = 200
 
     for code in list(target_codes):
-        mysql_conn = None
-        try:
-            mysql_conn = get_connection('/srv/stock/config/config.json')
-            df = fetch_from_naver(code, -1)
-            df['code'] = code
+        max_stock_pages = fetch_max_page(code)
+        pages_per_df = 20
+        df_loops = (max_stock_pages // pages_per_df) + (max_stock_pages % pages_per_df > 0)
+        for page in range(df_loops):
+            start_dt = datetime.now()
+            start = (page * pages_per_df) + 1
+            end = start + pages_per_df - 1
+            print(f"code : {code}, pages from {start} to  {end}, begin : {start_dt}")
+            df = fetch_from_naver(code, start, end)
             datalist = df.to_dict(orient='records')
-            total_size = len(datalist)
-            loops = (total_size // batch_size) + (total_size % batch_size > 0)
-            for i in range(1, loops + 1):
+            try:
+                mysql_conn = get_connection('/srv/stock/config/config.json')
                 with mysql_conn.cursor() as curs:
-                    start = batch_size * i
-                    end = (batch_size + 1) * i
-                    curs.executemany(query, datalist[start: end])
+                    curs.executemany(query, datalist)
                 mysql_conn.commit()
-
-        except Exception as ex:
-            # print(ex)
-            # print(f"[Error] Failed to update stock code : {code}")
-            raise ex
-        finally:
-            if mysql_conn:
-                mysql_conn.close()
+            except Exception as ex:
+                raise ex
+            finally:
+                end_dt = datetime.now()
+                print(f"code : {code}, pages from {start}, end : {start_dt}, took : {(end_dt - start_dt).seconds} s")
+                if mysql_conn:
+                    mysql_conn.close()
 
 
 if __name__ == '__main__':
