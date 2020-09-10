@@ -1,7 +1,10 @@
+import sys
+import os
 from urllib.request import urlopen
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import pandas as pd
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from src.etc.utils.maria_client import get_connection
 import pymysql
 """
