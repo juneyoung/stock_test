@@ -3,7 +3,7 @@ from src.week3.Investar.Analyzer import Analyzer
 
 if __name__ == '__main__':
     market_db = Analyzer()
-    stock_dataframe = market_db.get_daily_price_with_name('SK하이닉스', '2018-11-01')
+    stock_dataframe = market_db.get_daily_price_with_name('SK하이닉스', '2018-11-01', '2019-09-10')
 
     stock_dataframe['MA20'] = stock_dataframe['close'].rolling(window=20).mean()
     stock_dataframe['stddev'] = stock_dataframe['close'].rolling(window=20).std()
@@ -16,8 +16,7 @@ if __name__ == '__main__':
                             (stock_dataframe['high'] - stock_dataframe['low']) * \
                             (stock_dataframe['volume'])
 
-    stock_dataframe['IIP21'] = stock_dataframe['II'].rolling(window=21).sum() / \
-                               stock_dataframe['volume'].rolling(window=21).sum * 100
+    stock_dataframe['IIP21'] = (stock_dataframe['II'].rolling(window=21).sum()) / (stock_dataframe['volume'].rolling(window=21).sum()) * 100
 
     stock_dataframe = stock_dataframe.dropna()
 
@@ -44,7 +43,8 @@ if __name__ == '__main__':
 
     plt.subplot(3, 1, 3)
     plt.bar(stock_dataframe.index, stock_dataframe.IIP21, color='g', label='II% 21 day')
-    for i in range(stock_dataframe.close):
+
+    for i in range(len(stock_dataframe.close)):
         if stock_dataframe.PB.values[i] < .05 and stock_dataframe.IIP21.values[i] > 0:
             plt.plot(stock_dataframe.index.values[i], 0, 'r^')
         elif stock_dataframe.PB.values[i] > .95 and stock_dataframe.IIP21.values[i] < 0:

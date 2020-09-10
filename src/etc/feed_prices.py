@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import pandas as pd
 from src.etc.utils.maria_client import get_connection
+import pymysql
 """
 1. stock 디비에서 종목 전부 가져오기
 2. nhn 에서 종목별 가격 가져오기 = too long
@@ -95,7 +96,8 @@ def upsert_prices():
     #         diff = VALUES(diff),
     #         volume = VALUES(volume)
     # """
-    target_codes = fetch_target_codes(100)
+    # target_codes = fetch_target_codes(100)
+    target_codes = ['000660', '005930', '005380', '035420']  # SK하이닉스, 삼성전자, 현대차, NAVER
 
     for code in list(target_codes):
         max_stock_pages = fetch_max_page(code)
@@ -113,6 +115,8 @@ def upsert_prices():
                 with mysql_conn.cursor() as curs:
                     curs.executemany(query, datalist)
                 mysql_conn.commit()
+            except pymysql.err.IntegrityError as ie:
+                pass
             except Exception as ex:
                 raise ex
             finally:
