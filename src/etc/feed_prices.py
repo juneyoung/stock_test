@@ -96,8 +96,8 @@ def upsert_prices():
     #         diff = VALUES(diff),
     #         volume = VALUES(volume)
     # """
-    # target_codes = fetch_target_codes(100)
-    target_codes = ['000660', '005930', '005380', '035420']  # SK하이닉스, 삼성전자, 현대차, NAVER
+    target_codes = fetch_target_codes(100)
+    # target_codes = ['000660', '005930', '005380', '035420']  # SK하이닉스, 삼성전자, 현대차, NAVER
 
     for code in list(target_codes):
         max_stock_pages = fetch_max_page(code)
