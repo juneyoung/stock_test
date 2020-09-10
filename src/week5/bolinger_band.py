@@ -9,6 +9,7 @@ if __name__ == '__main__':
     stock_dataframe['stddev'] = stock_dataframe['close'].rolling(window=20).std()
     stock_dataframe['upper'] = stock_dataframe['MA20'] + (stock_dataframe['stddev'] * 2)
     stock_dataframe['lower'] = stock_dataframe['MA20'] - (stock_dataframe['stddev'] * 2)
+    stock_dataframe['bandwidth'] = (stock_dataframe['upper'] - stock_dataframe['lower']) / stock_dataframe['MA20'] * 100
     stock_dataframe['PB'] = (stock_dataframe['close'] - stock_dataframe['lower']) / \
                             (stock_dataframe['upper'] - stock_dataframe['lower'])
 
@@ -21,7 +22,7 @@ if __name__ == '__main__':
     stock_dataframe = stock_dataframe.dropna()
 
     plt.figure(figsize=(9, 9))
-    plt.subplot(3, 1, 1)
+    plt.subplot(4, 1, 1)
     plt.title('SK 하이닉스 Bollinger Band(20 day, 2 std) - Reversals')
     plt.plot(stock_dataframe.index, stock_dataframe['close'], 'm', label='close')
     plt.plot(stock_dataframe.index, stock_dataframe['upper'], 'r--', label='upper band')
@@ -36,14 +37,18 @@ if __name__ == '__main__':
             plt.plot(stock_dataframe.index.values[i], stock_dataframe.close.values[i], 'bv')
     plt.legend(loc='best')
 
-    plt.subplot(3, 1, 2)
+    plt.subplot(4, 1, 2)
     plt.plot(stock_dataframe.index, stock_dataframe['PB'], 'b', label='%b')
     plt.grid(True)
     plt.legend(loc='best')
 
-    plt.subplot(3, 1, 3)
-    plt.bar(stock_dataframe.index, stock_dataframe.IIP21, color='g', label='II% 21 day')
+    plt.subplot(4, 1, 3)
+    plt.plot(stock_dataframe.index, stock_dataframe['bandwidth'], color='m', label='bandwidth')
+    plt.grid(True)
+    plt.legend(loc='best')
 
+    plt.subplot(4, 1, 4)
+    plt.bar(stock_dataframe.index, stock_dataframe.IIP21, color='g', label='II% 21 day')
     for i in range(len(stock_dataframe.close)):
         if stock_dataframe.PB.values[i] < .05 and stock_dataframe.IIP21.values[i] > 0:
             plt.plot(stock_dataframe.index.values[i], 0, 'r^')
