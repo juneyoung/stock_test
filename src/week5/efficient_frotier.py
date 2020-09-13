@@ -31,7 +31,7 @@ if __name__ == '__main__':
         weights /= np.sum(weights)  # weights 에 할당된 모든 엘리먼트를 웨이트의 총합으로 나눔
 
         # 가중합 : https://rfriend.tistory.com/tag/np.dot%28%29 <= 좀 복잡함
-        returns = np.dot(weights, annual_ret)  # np.dot 이나 matmul 로 가중합을 구한다.
+        returns = np.dot(weights, annual_ret)  # np.dot 이나 matmul 로 가중합을 구한다. => 행렬 곱
         # 잘 이해 안감. 물어보기 => 연간 공분산과 종복별 비중 곱(ok) + 종목별 비중의 전치로 곱(?)
         # + 제곱근 하면 전체리스크라고 ???
         risks = np.sqrt(np.dot(weights.T, np.dot(annual_cov, weights)))
@@ -59,6 +59,9 @@ if __name__ == '__main__':
     # 샤프지수 == high risk, high return
     max_sharp = portfolio_dataframe.loc[portfolio_dataframe['sharp'] == portfolio_dataframe['sharp'].max()]
     min_risk = portfolio_dataframe.loc[portfolio_dataframe['risks'] == portfolio_dataframe['risks'].min()]
+
+    print(f'max_sharp : {max_sharp}')
+    print(f'min_risk : {min_risk}')
 
     portfolio_dataframe.plot.scatter(x='risks', y='returns', c='sharp'
                                      , cmap='viridis', edgecolors='k', figsize=(11, 7), grid=True)
